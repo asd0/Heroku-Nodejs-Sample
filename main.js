@@ -1,28 +1,20 @@
 const http = require('http');
+const route = require('self/route/route');
+
 const port = process.env.PORT || 50000;
 
-const server = http.createServer((req, res) => {
-  const { headers, method, url } = req;
-
-  console.log('----------------------------------------');
-  console.log(headers);
-  console.log('----------------------------------------');
-  console.log(method);
-  console.log('----------------------------------------');
-  console.log(url);
+const server = http.createServer((request, response) => {
+  const { headers, method, url } = request;
 
   if (headers['host'].split(':')[0] !== 'localhost' && headers['x-forwarded-proto'] !== 'https') {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Not support protocol. Please request on HTTPS.');
+    response.statusCode = 200;
+    response.setHeader('Content-Type', 'text/plain');
+    response.end('Not support protocol. Please request on HTTPS.');
     return;
   }
 
+  route.execute(request, response);
   // sendRequest();
-
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World!');
 });
 
 server.listen(port, () => {
